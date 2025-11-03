@@ -79,8 +79,15 @@
         
         .control-row {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 20px;
+        }
+        
+        .help-text {
+            font-size: 0.85em;
+            color: #666;
+            margin-top: 5px;
+            font-style: italic;
         }
         
         .button-group {
@@ -201,26 +208,41 @@
             font-weight: bold;
         }
         
-        .problem-difficulty {
+        .problem-badges {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .badge {
             display: inline-block;
             padding: 5px 12px;
             border-radius: 15px;
             font-size: 0.8em;
             font-weight: bold;
-            margin-left: 10px;
         }
         
-        .difficulty-facile {
-            background: #4caf50;
+        .badge-level {
+            background: #2196F3;
             color: white;
         }
         
-        .difficulty-moyen {
+        .badge-difficulty {
             background: #ff9800;
             color: white;
         }
         
-        .difficulty-difficile {
+        .badge-easy {
+            background: #4caf50;
+            color: white;
+        }
+        
+        .badge-medium {
+            background: #ff9800;
+            color: white;
+        }
+        
+        .badge-hard {
             background: #f44336;
             color: white;
         }
@@ -301,7 +323,7 @@
     <div class="container">
         <div class="header">
             <h1>🎓 Générateur d'Exercices</h1>
-            <p>Étude de Fonctions - Niveau Baccalauréat (Tunisie & Maroc)</p>
+            <p>Étude de Fonctions - Niveau Baccalauréat</p>
         </div>
         
         <div class="controls">
@@ -323,13 +345,24 @@
                 </div>
                 
                 <div class="control-group">
-                    <label for="difficulty">Niveau de difficulté</label>
-                    <select id="difficulty">
+                    <label for="curriculumLevel">Niveau du programme</label>
+                    <select id="curriculumLevel">
                         <option value="all">Tous les niveaux</option>
-                        <option value="facile">Facile (Première/Bac 1)</option>
-                        <option value="moyen">Moyen (Terminale/Bac 2)</option>
-                        <option value="difficile">Difficile (Examen)</option>
+                        <option value="bac1">Première / Bac 1</option>
+                        <option value="bac2">Terminale / Bac 2</option>
                     </select>
+                    <div class="help-text">Selon le programme scolaire</div>
+                </div>
+                
+                <div class="control-group">
+                    <label for="difficulty">Difficulté des questions</label>
+                    <select id="difficulty">
+                        <option value="all">Toutes difficultés</option>
+                        <option value="easy">Facile</option>
+                        <option value="medium">Moyen</option>
+                        <option value="hard">Difficile</option>
+                    </select>
+                    <div class="help-text">Complexité des calculs</div>
                 </div>
                 
                 <div class="control-group">
@@ -379,568 +412,688 @@
         </div>
         
         <div class="footer">
-            <p>Générateur d'exercices basé sur les programmes tunisien et marocain | © 2025</p>
+            <p>Générateur d'exercices pour l'étude de fonctions | Créé par <strong>Atef Kreidie</strong></p>
         </div>
     </div>
 
     <script>
-        // Problem generation engine
+        // Problem generation engine with separate curriculum and difficulty
         const problemGenerators = {
             limits: {
-                facile: [
-                    () => {
-                        const a = Math.floor(Math.random() * 5) + 1;
-                        const b = Math.floor(Math.random() * 5) + 1;
-                        return {
-                            type: "Calcul de limite",
-                            function: `f(x) = ${a}x + ${b}`,
-                            questions: [
-                                `Calculer lim<sub>x→+∞</sub> f(x)`,
-                                `Calculer lim<sub>x→-∞</sub> f(x)`
-                            ]
-                        };
-                    },
-                    () => {
-                        const a = Math.floor(Math.random() * 5) + 1;
-                        const b = Math.floor(Math.random() * 5) + 1;
-                        return {
-                            type: "Calcul de limite",
-                            function: `f(x) = (x² - ${a*a})/(x - ${a})`,
-                            questions: [
-                                `Calculer lim<sub>x→${a}</sub> f(x)`,
-                                `Simplifier f(x) pour x ≠ ${a}`
-                            ]
-                        };
-                    },
-                    () => {
-                        return {
-                            type: "Calcul de limite",
-                            function: `f(x) = sin(x)/x`,
-                            questions: [
-                                `Calculer lim<sub>x→0</sub> f(x)`,
-                                `Que représente cette limite remarquable ?`
-                            ]
-                        };
-                    }
-                ],
-                moyen: [
-                    () => {
-                        const a = Math.floor(Math.random() * 3) + 2;
-                        return {
-                            type: "Calcul de limite",
-                            function: `f(x) = (√(x² + ${a}x) - x)`,
-                            questions: [
-                                `Calculer lim<sub>x→+∞</sub> f(x)`,
-                                `Lever l'indétermination en factorisant par l'expression conjuguée`
-                            ]
-                        };
-                    },
-                    () => {
-                        return {
-                            type: "Calcul de limite",
-                            function: `f(x) = (e<sup>x</sup> - 1)/x`,
-                            questions: [
-                                `Calculer lim<sub>x→0</sub> f(x)`,
-                                `Comparer avec la limite remarquable`
-                            ]
-                        };
-                    },
-                    () => {
-                        const a = Math.floor(Math.random() * 3) + 2;
-                        return {
-                            type: "Calcul de limite",
-                            function: `f(x) = x·ln(x)`,
-                            questions: [
-                                `Calculer lim<sub>x→0<sup>+</sup></sub> f(x)`,
-                                `Lever l'indétermination`,
-                                `Calculer lim<sub>x→+∞</sub> f(x)`
-                            ]
-                        };
-                    }
-                ],
-                difficile: [
-                    () => {
-                        return {
-                            type: "Calcul de limite",
-                            function: `f(x) = (1 - cos(x))/x²`,
-                            questions: [
-                                `Calculer lim<sub>x→0</sub> f(x)`,
-                                `Utiliser la limite remarquable et l'identité trigonométrique`,
-                                `Vérifier le résultat avec la règle de L'Hôpital`
-                            ]
-                        };
-                    },
-                    () => {
-                        const n = Math.floor(Math.random() * 3) + 2;
-                        return {
-                            type: "Calcul de limite - Croissances comparées",
-                            function: `f(x) = x<sup>${n}</sup>·e<sup>-x</sup>`,
-                            questions: [
-                                `Calculer lim<sub>x→+∞</sub> f(x)`,
-                                `Appliquer le théorème des croissances comparées`,
-                                `Interpréter le résultat graphiquement`
-                            ]
-                        };
-                    }
-                ]
+                bac1: {
+                    easy: [
+                        () => {
+                            const a = Math.floor(Math.random() * 5) + 1;
+                            const b = Math.floor(Math.random() * 5) + 1;
+                            return {
+                                type: "Calcul de limite",
+                                function: `f(x) = ${a}x + ${b}`,
+                                questions: [
+                                    `Calculer lim<sub>x→+∞</sub> f(x)`,
+                                    `Calculer lim<sub>x→-∞</sub> f(x)`
+                                ]
+                            };
+                        },
+                        () => {
+                            const a = Math.floor(Math.random() * 5) + 1;
+                            return {
+                                type: "Calcul de limite",
+                                function: `f(x) = ${a}x²`,
+                                questions: [
+                                    `Calculer lim<sub>x→0</sub> f(x)`,
+                                    `Calculer lim<sub>x→+∞</sub> f(x)`
+                                ]
+                            };
+                        }
+                    ],
+                    medium: [
+                        () => {
+                            const a = Math.floor(Math.random() * 5) + 1;
+                            return {
+                                type: "Calcul de limite",
+                                function: `f(x) = (x² - ${a*a})/(x - ${a})`,
+                                questions: [
+                                    `Calculer lim<sub>x→${a}</sub> f(x)`,
+                                    `Simplifier f(x) pour x ≠ ${a}`
+                                ]
+                            };
+                        },
+                        () => {
+                            const a = Math.floor(Math.random() * 3) + 1;
+                            const b = Math.floor(Math.random() * 3) + 1;
+                            return {
+                                type: "Calcul de limite",
+                                function: `f(x) = (${a}x² + ${b}x)/(x² + 1)`,
+                                questions: [
+                                    `Calculer lim<sub>x→+∞</sub> f(x)`,
+                                    `Calculer lim<sub>x→-∞</sub> f(x)`
+                                ]
+                            };
+                        }
+                    ],
+                    hard: [
+                        () => {
+                            const a = Math.floor(Math.random() * 3) + 2;
+                            return {
+                                type: "Calcul de limite",
+                                function: `f(x) = (x³ - ${a}x² + 1)/(x² - ${a})`,
+                                questions: [
+                                    `Calculer lim<sub>x→√${a}</sub> f(x)`,
+                                    `Calculer lim<sub>x→+∞</sub> f(x)`,
+                                    `En déduire les asymptotes`
+                                ]
+                            };
+                        }
+                    ]
+                },
+                bac2: {
+                    easy: [
+                        () => {
+                            return {
+                                type: "Calcul de limite",
+                                function: `f(x) = sin(x)/x`,
+                                questions: [
+                                    `Calculer lim<sub>x→0</sub> f(x)`,
+                                    `Que représente cette limite remarquable ?`
+                                ]
+                            };
+                        },
+                        () => {
+                            return {
+                                type: "Calcul de limite",
+                                function: `f(x) = (e<sup>x</sup> - 1)/x`,
+                                questions: [
+                                    `Calculer lim<sub>x→0</sub> f(x)`,
+                                    `Comparer avec la limite remarquable`
+                                ]
+                            };
+                        }
+                    ],
+                    medium: [
+                        () => {
+                            const a = Math.floor(Math.random() * 3) + 2;
+                            return {
+                                type: "Calcul de limite",
+                                function: `f(x) = (√(x² + ${a}x) - x)`,
+                                questions: [
+                                    `Calculer lim<sub>x→+∞</sub> f(x)`,
+                                    `Lever l'indétermination en utilisant l'expression conjuguée`
+                                ]
+                            };
+                        },
+                        () => {
+                            return {
+                                type: "Calcul de limite",
+                                function: `f(x) = x·ln(x)`,
+                                questions: [
+                                    `Calculer lim<sub>x→0<sup>+</sup></sub> f(x)`,
+                                    `Lever l'indétermination`,
+                                    `Calculer lim<sub>x→+∞</sub> f(x)`
+                                ]
+                            };
+                        }
+                    ],
+                    hard: [
+                        () => {
+                            return {
+                                type: "Calcul de limite - Croissances comparées",
+                                function: `f(x) = x²·e<sup>-x</sup>`,
+                                questions: [
+                                    `Calculer lim<sub>x→+∞</sub> f(x)`,
+                                    `Appliquer le théorème des croissances comparées`,
+                                    `Interpréter le résultat graphiquement`
+                                ]
+                            };
+                        },
+                        () => {
+                            return {
+                                type: "Calcul de limite",
+                                function: `f(x) = (1 - cos(x))/x²`,
+                                questions: [
+                                    `Calculer lim<sub>x→0</sub> f(x)`,
+                                    `Utiliser la limite remarquable et l'identité trigonométrique`,
+                                    `Vérifier le résultat`
+                                ]
+                            };
+                        }
+                    ]
+                }
             },
             
             continuity: {
-                facile: [
-                    () => {
-                        const a = Math.floor(Math.random() * 5) + 1;
-                        return {
-                            type: "Continuité",
-                            function: `f(x) = x² + ${a}`,
-                            questions: [
-                                `Montrer que f est continue sur ℝ`,
-                                `Justifier par les théorèmes sur la continuité`
-                            ]
-                        };
-                    },
-                    () => {
-                        const a = Math.floor(Math.random() * 5) + 1;
-                        return {
-                            type: "Continuité",
-                            function: `f(x) = |x - ${a}|`,
-                            questions: [
-                                `Étudier la continuité de f sur ℝ`,
-                                `f est-elle continue en x = ${a} ?`
-                            ]
-                        };
-                    }
-                ],
-                moyen: [
-                    () => {
-                        const a = Math.floor(Math.random() * 3) + 1;
-                        return {
-                            type: "Continuité et TVI",
-                            function: `f(x) = x³ - ${a}x - ${a}`,
-                            questions: [
-                                `Montrer que f est continue sur ℝ`,
-                                `Calculer f(0) et f(${a+1})`,
-                                `Montrer que l'équation f(x) = 0 admet au moins une solution dans ]0, ${a+1}[`
-                            ]
-                        };
-                    },
-                    () => {
-                        const a = Math.floor(Math.random() * 3) + 1;
-                        const k = Math.floor(Math.random() * 5) + 1;
-                        return {
-                            type: "Continuité par morceaux",
-                            function: `f(x) = { x² si x < ${a}, ax + b si x ≥ ${a} }`,
-                            questions: [
-                                `Pour quelles valeurs de a et b, f est-elle continue en x = ${a} ?`,
-                                `Déterminer l'ensemble des couples (a, b) solutions`
-                            ]
-                        };
-                    }
-                ],
-                difficile: [
-                    () => {
-                        return {
-                            type: "Continuité et fonction composée",
-                            function: `f(x) = { x·sin(1/x) si x ≠ 0, 0 si x = 0 }`,
-                            questions: [
-                                `Montrer que f est continue en 0`,
-                                `Utiliser l'encadrement -|x| ≤ x·sin(1/x) ≤ |x|`,
-                                `Appliquer le théorème des gendarmes`
-                            ]
-                        };
-                    }
-                ]
+                bac1: {
+                    easy: [
+                        () => {
+                            const a = Math.floor(Math.random() * 5) + 1;
+                            return {
+                                type: "Continuité",
+                                function: `f(x) = x² + ${a}`,
+                                questions: [
+                                    `Montrer que f est continue sur ℝ`,
+                                    `Justifier par les théorèmes sur la continuité`
+                                ]
+                            };
+                        }
+                    ],
+                    medium: [
+                        () => {
+                            const a = Math.floor(Math.random() * 5) + 1;
+                            return {
+                                type: "Continuité",
+                                function: `f(x) = |x - ${a}|`,
+                                questions: [
+                                    `Étudier la continuité de f sur ℝ`,
+                                    `f est-elle continue en x = ${a} ?`,
+                                    `Justifier la réponse`
+                                ]
+                            };
+                        }
+                    ],
+                    hard: [
+                        () => {
+                            const a = Math.floor(Math.random() * 3) + 1;
+                            return {
+                                type: "Continuité par morceaux",
+                                function: `f(x) = { x² si x < ${a}, ax + b si x ≥ ${a} }`,
+                                questions: [
+                                    `Pour quelles valeurs de a et b, f est-elle continue en x = ${a} ?`,
+                                    `Déterminer l'ensemble des couples (a, b) solutions`,
+                                    `Tracer la courbe pour a = ${a}, b = ${a*a}`
+                                ]
+                            };
+                        }
+                    ]
+                },
+                bac2: {
+                    easy: [
+                        () => {
+                            const a = Math.floor(Math.random() * 3) + 1;
+                            return {
+                                type: "Continuité",
+                                function: `f(x) = ln(x + ${a})`,
+                                questions: [
+                                    `Déterminer le domaine de définition`,
+                                    `Étudier la continuité de f sur son domaine`
+                                ]
+                            };
+                        }
+                    ],
+                    medium: [
+                        () => {
+                            const a = Math.floor(Math.random() * 3) + 1;
+                            return {
+                                type: "Continuité et TVI",
+                                function: `f(x) = x³ - ${a}x - ${a}`,
+                                questions: [
+                                    `Montrer que f est continue sur ℝ`,
+                                    `Calculer f(0) et f(${a+1})`,
+                                    `Montrer que l'équation f(x) = 0 admet au moins une solution dans ]0, ${a+1}[`
+                                ]
+                            };
+                        }
+                    ],
+                    hard: [
+                        () => {
+                            return {
+                                type: "Continuité et fonction composée",
+                                function: `f(x) = { x·sin(1/x) si x ≠ 0, 0 si x = 0 }`,
+                                questions: [
+                                    `Montrer que f est continue en 0`,
+                                    `Utiliser l'encadrement -|x| ≤ x·sin(1/x) ≤ |x|`,
+                                    `Appliquer le théorème des gendarmes`
+                                ]
+                            };
+                        }
+                    ]
+                }
             },
             
             derivative: {
-                facile: [
-                    () => {
-                        const a = Math.floor(Math.random() * 5) + 1;
-                        const b = Math.floor(Math.random() * 5) + 1;
-                        const c = Math.floor(Math.random() * 5) + 1;
-                        return {
-                            type: "Dérivée",
-                            function: `f(x) = ${a}x³ + ${b}x² + ${c}x`,
-                            questions: [
-                                `Calculer f'(x)`,
-                                `Calculer f'(0) et f'(1)`
-                            ]
-                        };
-                    },
-                    () => {
-                        const a = Math.floor(Math.random() * 5) + 1;
-                        const b = Math.floor(Math.random() * 5) + 1;
-                        return {
-                            type: "Dérivée et tangente",
-                            function: `f(x) = ${a}x² + ${b}`,
-                            questions: [
-                                `Calculer f'(x)`,
-                                `Déterminer l'équation de la tangente au point d'abscisse 1`
-                            ]
-                        };
-                    }
-                ],
-                moyen: [
-                    () => {
-                        const a = Math.floor(Math.random() * 3) + 2;
-                        return {
-                            type: "Dérivée - Fonction composée",
-                            function: `f(x) = ln(x² + ${a})`,
-                            questions: [
-                                `Calculer f'(x)`,
-                                `Simplifier l'expression`,
-                                `Étudier le signe de f'(x)`
-                            ]
-                        };
-                    },
-                    () => {
-                        const a = Math.floor(Math.random() * 3) + 1;
-                        return {
-                            type: "Dérivée - Produit",
-                            function: `f(x) = x²·e<sup>-x</sup>`,
-                            questions: [
-                                `Calculer f'(x) en utilisant la formule (uv)' = u'v + uv'`,
-                                `Factoriser f'(x)`,
-                                `Résoudre f'(x) = 0`
-                            ]
-                        };
-                    }
-                ],
-                difficile: [
-                    () => {
-                        return {
-                            type: "Dérivée - Quotient",
-                            function: `f(x) = (x² + 1)/(x² - 1)`,
-                            questions: [
-                                `Déterminer le domaine de définition de f`,
-                                `Calculer f'(x) en utilisant la formule (u/v)'`,
-                                `Montrer que f'(x) = -4x/(x² - 1)²`,
-                                `Dresser le tableau de variations de f`
-                            ]
-                        };
-                    }
-                ]
+                bac1: {
+                    easy: [
+                        () => {
+                            const a = Math.floor(Math.random() * 5) + 1;
+                            const b = Math.floor(Math.random() * 5) + 1;
+                            return {
+                                type: "Dérivée",
+                                function: `f(x) = ${a}x² + ${b}x`,
+                                questions: [
+                                    `Calculer f'(x)`,
+                                    `Calculer f'(1)`
+                                ]
+                            };
+                        }
+                    ],
+                    medium: [
+                        () => {
+                            const a = Math.floor(Math.random() * 3) + 1;
+                            const b = Math.floor(Math.random() * 3) + 1;
+                            return {
+                                type: "Dérivée et tangente",
+                                function: `f(x) = ${a}x³ + ${b}x`,
+                                questions: [
+                                    `Calculer f'(x)`,
+                                    `Déterminer l'équation de la tangente au point d'abscisse 0`,
+                                    `Déterminer les points où la tangente est horizontale`
+                                ]
+                            };
+                        }
+                    ],
+                    hard: [
+                        () => {
+                            const a = Math.floor(Math.random() * 3) + 1;
+                            return {
+                                type: "Dérivée - Quotient",
+                                function: `f(x) = (x² + ${a})/(x - ${a})`,
+                                questions: [
+                                    `Déterminer le domaine de définition de f`,
+                                    `Calculer f'(x)`,
+                                    `Simplifier l'expression`,
+                                    `Étudier le signe de f'(x)`
+                                ]
+                            };
+                        }
+                    ]
+                },
+                bac2: {
+                    easy: [
+                        () => {
+                            return {
+                                type: "Dérivée",
+                                function: `f(x) = e<sup>x</sup> + x`,
+                                questions: [
+                                    `Calculer f'(x)`,
+                                    `En déduire que f est strictement croissante`
+                                ]
+                            };
+                        }
+                    ],
+                    medium: [
+                        () => {
+                            const a = Math.floor(Math.random() * 3) + 2;
+                            return {
+                                type: "Dérivée - Fonction composée",
+                                function: `f(x) = ln(x² + ${a})`,
+                                questions: [
+                                    `Calculer f'(x)`,
+                                    `Simplifier l'expression`,
+                                    `Étudier le signe de f'(x)`
+                                ]
+                            };
+                        },
+                        () => {
+                            return {
+                                type: "Dérivée - Produit",
+                                function: `f(x) = x²·e<sup>-x</sup>`,
+                                questions: [
+                                    `Calculer f'(x) en utilisant la formule (uv)' = u'v + uv'`,
+                                    `Factoriser f'(x)`,
+                                    `Résoudre f'(x) = 0`
+                                ]
+                            };
+                        }
+                    ],
+                    hard: [
+                        () => {
+                            return {
+                                type: "Dérivée - Quotient complexe",
+                                function: `f(x) = (x² + 1)/(x² - 1)`,
+                                questions: [
+                                    `Déterminer le domaine de définition de f`,
+                                    `Calculer f'(x) en utilisant la formule (u/v)'`,
+                                    `Montrer que f'(x) = -4x/(x² - 1)²`,
+                                    `Dresser le tableau de variations de f`
+                                ]
+                            };
+                        }
+                    ]
+                }
             },
             
             variations: {
-                facile: [
-                    () => {
-                        const a = Math.floor(Math.random() * 3) + 2;
-                        return {
-                            type: "Étude de variations",
-                            function: `f(x) = -x² + ${a}x`,
-                            questions: [
-                                `Calculer f'(x)`,
-                                `Étudier le signe de f'(x)`,
-                                `Dresser le tableau de variations de f`,
-                                `Déterminer les extremums`
-                            ]
-                        };
-                    }
-                ],
-                moyen: [
-                    () => {
-                        const a = Math.floor(Math.random() * 4) + 1;
-                        return {
-                            type: "Étude de variations",
-                            function: `f(x) = x³ - ${3*a}x² + ${3*a*a}x`,
-                            questions: [
-                                `Calculer f'(x) et factoriser`,
-                                `Résoudre f'(x) = 0`,
-                                `Étudier le signe de f'(x)`,
-                                `Dresser le tableau de variations`,
-                                `Déterminer les extremums locaux`
-                            ]
-                        };
-                    },
-                    () => {
-                        return {
-                            type: "Étude de variations",
-                            function: `f(x) = x - ln(x) sur ]0, +∞[`,
-                            questions: [
-                                `Calculer f'(x)`,
-                                `Montrer que f'(x) = (x - 1)/x`,
-                                `Étudier le signe de f'(x)`,
-                                `Dresser le tableau de variations`,
-                                `En déduire que f(x) ≥ 1 pour tout x > 0`
-                            ]
-                        };
-                    }
-                ],
-                difficile: [
-                    () => {
-                        return {
-                            type: "Étude de variations - Fonction auxiliaire",
-                            function: `f(x) = x² - 2x·ln(x) sur ]0, +∞[`,
-                            questions: [
-                                `Calculer f'(x)`,
-                                `Montrer que f'(x) = 2(x - ln(x) - 1)`,
-                                `Poser g(x) = x - ln(x) - 1 et étudier les variations de g`,
-                                `Montrer que g(x) = 0 admet une unique solution α ∈ ]1, 2[`,
-                                `En déduire le signe de f'(x) et dresser le tableau de variations de f`
-                            ]
-                        };
-                    }
-                ]
+                bac1: {
+                    easy: [
+                        () => {
+                            const a = Math.floor(Math.random() * 3) + 2;
+                            return {
+                                type: "Étude de variations",
+                                function: `f(x) = -x² + ${a}x`,
+                                questions: [
+                                    `Calculer f'(x)`,
+                                    `Étudier le signe de f'(x)`,
+                                    `Dresser le tableau de variations`
+                                ]
+                            };
+                        }
+                    ],
+                    medium: [
+                        () => {
+                            const a = Math.floor(Math.random() * 3) + 1;
+                            return {
+                                type: "Étude de variations",
+                                function: `f(x) = x³ - ${3*a}x`,
+                                questions: [
+                                    `Calculer f'(x) et factoriser`,
+                                    `Résoudre f'(x) = 0`,
+                                    `Étudier le signe de f'(x)`,
+                                    `Dresser le tableau de variations`
+                                ]
+                            };
+                        }
+                    ],
+                    hard: [
+                        () => {
+                            return {
+                                type: "Étude de variations",
+                                function: `f(x) = x⁴ - 4x² + 3`,
+                                questions: [
+                                    `Calculer f'(x)`,
+                                    `Factoriser f'(x)`,
+                                    `Résoudre f'(x) = 0`,
+                                    `Dresser le tableau de variations complet`,
+                                    `Déterminer tous les extremums`
+                                ]
+                            };
+                        }
+                    ]
+                },
+                bac2: {
+                    easy: [
+                        () => {
+                            return {
+                                type: "Étude de variations",
+                                function: `f(x) = x·e<sup>-x</sup>`,
+                                questions: [
+                                    `Calculer f'(x)`,
+                                    `Étudier le signe de f'(x)`,
+                                    `Dresser le tableau de variations`
+                                ]
+                            };
+                        }
+                    ],
+                    medium: [
+                        () => {
+                            return {
+                                type: "Étude de variations",
+                                function: `f(x) = x - ln(x) sur ]0, +∞[`,
+                                questions: [
+                                    `Calculer f'(x)`,
+                                    `Montrer que f'(x) = (x - 1)/x`,
+                                    `Étudier le signe de f'(x)`,
+                                    `Dresser le tableau de variations`,
+                                    `En déduire que f(x) ≥ 1 pour tout x > 0`
+                                ]
+                            };
+                        }
+                    ],
+                    hard: [
+                        () => {
+                            return {
+                                type: "Étude de variations - Fonction auxiliaire",
+                                function: `f(x) = x² - 2x·ln(x) sur ]0, +∞[`,
+                                questions: [
+                                    `Calculer f'(x)`,
+                                    `Montrer que f'(x) = 2(x - ln(x) - 1)`,
+                                    `Poser g(x) = x - ln(x) - 1 et étudier les variations de g`,
+                                    `Montrer que g(x) = 0 admet une unique solution α ∈ ]1, 2[`,
+                                    `En déduire le signe de f'(x) et dresser le tableau de variations de f`
+                                ]
+                            };
+                        }
+                    ]
+                }
             },
             
+            // Add more problem types with bac1/bac2 structure...
             asymptotes: {
-                facile: [
-                    () => {
-                        const a = Math.floor(Math.random() * 5) + 1;
-                        return {
-                            type: "Asymptotes",
-                            function: `f(x) = ${a}/x`,
-                            questions: [
-                                `Déterminer le domaine de définition`,
-                                `Calculer lim<sub>x→0<sup>+</sup></sub> f(x) et lim<sub>x→0<sup>-</sup></sub> f(x)`,
-                                `En déduire l'asymptote verticale`,
-                                `Calculer lim<sub>x→±∞</sub> f(x) et déterminer l'asymptote horizontale`
-                            ]
-                        };
-                    }
-                ],
-                moyen: [
-                    () => {
-                        const a = Math.floor(Math.random() * 3) + 2;
-                        return {
-                            type: "Asymptotes obliques",
-                            function: `f(x) = x + ${a}/x`,
-                            questions: [
-                                `Calculer lim<sub>x→±∞</sub> [f(x) - x]`,
-                                `Montrer que y = x est asymptote oblique en ±∞`,
-                                `Étudier la position de (C<sub>f</sub>) par rapport à cette asymptote`,
-                                `Tracer les asymptotes et la courbe`
-                            ]
-                        };
-                    },
-                    () => {
-                        const a = Math.floor(Math.random() * 3) + 1;
-                        const b = Math.floor(Math.random() * 3) + 1;
-                        return {
-                            type: "Asymptotes",
-                            function: `f(x) = (x² + ${a})/(x + ${b})`,
-                            questions: [
-                                `Déterminer les asymptotes verticales`,
-                                `Effectuer la division euclidienne`,
-                                `Déterminer l'asymptote oblique`,
-                                `Calculer f(x) - (ax + b) et étudier son signe`
-                            ]
-                        };
-                    }
-                ],
-                difficile: [
-                    () => {
-                        return {
-                            type: "Asymptotes - Fonction exponentielle",
-                            function: `f(x) = x + e<sup>-x</sup>`,
-                            questions: [
-                                `Calculer lim<sub>x→+∞</sub> f(x) et lim<sub>x→-∞</sub> f(x)`,
-                                `Montrer que y = x est asymptote oblique en +∞`,
-                                `Y a-t-il une asymptote en -∞ ? Justifier`,
-                                `Étudier la position relative de (C<sub>f</sub>) par rapport à (D): y = x`
-                            ]
-                        };
-                    }
-                ]
+                bac1: {
+                    easy: [
+                        () => {
+                            const a = Math.floor(Math.random() * 5) + 1;
+                            return {
+                                type: "Asymptotes",
+                                function: `f(x) = ${a}/x`,
+                                questions: [
+                                    `Déterminer le domaine de définition`,
+                                    `Calculer les limites aux bornes`,
+                                    `Déterminer les asymptotes`
+                                ]
+                            };
+                        }
+                    ],
+                    medium: [
+                        () => {
+                            const a = Math.floor(Math.random() * 3) + 2;
+                            return {
+                                type: "Asymptotes",
+                                function: `f(x) = x + ${a}/x`,
+                                questions: [
+                                    `Calculer lim<sub>x→±∞</sub> [f(x) - x]`,
+                                    `Montrer que y = x est asymptote oblique`,
+                                    `Étudier la position de la courbe par rapport à l'asymptote`
+                                ]
+                            };
+                        }
+                    ],
+                    hard: [
+                        () => {
+                            const a = Math.floor(Math.random() * 3) + 1;
+                            const b = Math.floor(Math.random() * 3) + 1;
+                            return {
+                                type: "Asymptotes",
+                                function: `f(x) = (x² + ${a})/(x + ${b})`,
+                                questions: [
+                                    `Déterminer les asymptotes verticales`,
+                                    `Effectuer la division euclidienne`,
+                                    `Déterminer l'asymptote oblique`,
+                                    `Étudier la position relative`
+                                ]
+                            };
+                        }
+                    ]
+                },
+                bac2: {
+                    easy: [
+                        () => {
+                            return {
+                                type: "Asymptotes",
+                                function: `f(x) = e<sup>x</sup>/(e<sup>x</sup> + 1)`,
+                                questions: [
+                                    `Calculer les limites en ±∞`,
+                                    `Déterminer les asymptotes horizontales`
+                                ]
+                            };
+                        }
+                    ],
+                    medium: [
+                        () => {
+                            return {
+                                type: "Asymptotes",
+                                function: `f(x) = x + e<sup>-x</sup>`,
+                                questions: [
+                                    `Calculer lim<sub>x→+∞</sub> f(x) et lim<sub>x→-∞</sub> f(x)`,
+                                    `Montrer que y = x est asymptote en +∞`,
+                                    `Y a-t-il une asymptote en -∞ ? Justifier`
+                                ]
+                            };
+                        }
+                    ],
+                    hard: [
+                        () => {
+                            return {
+                                type: "Asymptotes",
+                                function: `f(x) = x - ln(x) sur ]0, +∞[`,
+                                questions: [
+                                    `Calculer les limites aux bornes`,
+                                    `Montrer que y = x est asymptote oblique en +∞`,
+                                    `Étudier la position de (C<sub>f</sub>) par rapport à (D): y = x`,
+                                    `Tracer les asymptotes et la courbe`
+                                ]
+                            };
+                        }
+                    ]
+                }
             },
             
             logarithm: {
-                facile: [
-                    () => {
-                        const a = Math.floor(Math.random() * 5) + 2;
-                        return {
-                            type: "Fonction logarithme",
-                            function: `Équation: ln(x) = ${a}`,
-                            questions: [
-                                `Résoudre l'équation`,
-                                `Donner la solution exacte et une valeur approchée`
-                            ]
-                        };
-                    }
-                ],
-                moyen: [
-                    () => {
-                        const a = Math.floor(Math.random() * 5) + 2;
-                        return {
-                            type: "Fonction logarithme",
-                            function: `Équation: ln(x) + ln(x - 1) = ln(${a})`,
-                            questions: [
-                                `Déterminer le domaine de définition`,
-                                `Simplifier en utilisant les propriétés du logarithme`,
-                                `Résoudre l'équation`,
-                                `Vérifier la solution`
-                            ]
-                        };
-                    },
-                    () => {
-                        return {
-                            type: "Fonction logarithme - Inéquation",
-                            function: `Inéquation: ln(x - 2) > ln(5 - x)`,
-                            questions: [
-                                `Déterminer le domaine de validité`,
-                                `Résoudre l'inéquation`,
-                                `Donner l'ensemble solution`
-                            ]
-                        };
-                    }
-                ],
-                difficile: [
-                    () => {
-                        return {
-                            type: "Étude de fonction logarithmique",
-                            function: `f(x) = x - 1 - ln(x) sur ]0, +∞[`,
-                            questions: [
-                                `Calculer les limites aux bornes`,
-                                `Calculer f'(x) et étudier son signe`,
-                                `Dresser le tableau de variations`,
-                                `En déduire que ∀x > 0, ln(x) ≤ x - 1`,
-                                `Montrer l'égalité si et seulement si x = 1`
-                            ]
-                        };
-                    }
-                ]
+                bac2: {
+                    easy: [
+                        () => {
+                            const a = Math.floor(Math.random() * 5) + 2;
+                            return {
+                                type: "Fonction logarithme",
+                                function: `Équation: ln(x) = ${a}`,
+                                questions: [
+                                    `Résoudre l'équation`,
+                                    `Donner la solution exacte`
+                                ]
+                            };
+                        }
+                    ],
+                    medium: [
+                        () => {
+                            const a = Math.floor(Math.random() * 5) + 2;
+                            return {
+                                type: "Fonction logarithme",
+                                function: `Équation: ln(x) + ln(x - 1) = ln(${a})`,
+                                questions: [
+                                    `Déterminer le domaine de définition`,
+                                    `Simplifier en utilisant les propriétés`,
+                                    `Résoudre l'équation`
+                                ]
+                            };
+                        }
+                    ],
+                    hard: [
+                        () => {
+                            return {
+                                type: "Étude de fonction logarithmique",
+                                function: `f(x) = x - 1 - ln(x) sur ]0, +∞[`,
+                                questions: [
+                                    `Calculer les limites aux bornes`,
+                                    `Calculer f'(x) et étudier son signe`,
+                                    `Dresser le tableau de variations`,
+                                    `En déduire que ∀x > 0, ln(x) ≤ x - 1`
+                                ]
+                            };
+                        }
+                    ]
+                }
             },
             
             exponential: {
-                facile: [
-                    () => {
-                        const a = Math.floor(Math.random() * 3) + 1;
-                        return {
-                            type: "Fonction exponentielle",
-                            function: `Équation: e<sup>x</sup> = ${a}`,
-                            questions: [
-                                `Résoudre l'équation`,
-                                `Exprimer la solution avec ln`
-                            ]
-                        };
-                    }
-                ],
-                moyen: [
-                    () => {
-                        const a = Math.floor(Math.random() * 5) + 1;
-                        const b = Math.floor(Math.random() * 3) + 1;
-                        return {
-                            type: "Fonction exponentielle",
-                            function: `Équation: e<sup>2x</sup> - ${a}e<sup>x</sup> + ${b} = 0`,
-                            questions: [
-                                `Poser X = e<sup>x</sup>`,
-                                `Résoudre l'équation du second degré en X`,
-                                `En déduire les solutions en x`,
-                                `Vérifier les solutions`
-                            ]
-                        };
-                    },
-                    () => {
-                        return {
-                            type: "Fonction exponentielle - Inéquation",
-                            function: `Inéquation: e<sup>x</sup> > e<sup>2x-3</sup>`,
-                            questions: [
-                                `Utiliser la croissance de la fonction exponentielle`,
-                                `Résoudre l'inéquation`,
-                                `Donner l'ensemble solution`
-                            ]
-                        };
-                    }
-                ],
-                difficile: [
-                    () => {
-                        return {
-                            type: "Étude complète - Fonction exponentielle",
-                            function: `f(x) = (x² + 1)·e<sup>-x</sup>`,
-                            questions: [
-                                `Calculer lim<sub>x→-∞</sub> f(x) et lim<sub>x→+∞</sub> f(x)`,
-                                `Montrer que f'(x) = (-x² + 2x - 1)·e<sup>-x</sup>`,
-                                `Factoriser f'(x) sous la forme -(x - 1)²·e<sup>-x</sup>`,
-                                `Dresser le tableau de variations`,
-                                `Déterminer le maximum de f`,
-                                `Tracer la courbe avec ses asymptotes`
-                            ]
-                        };
-                    }
-                ]
+                bac2: {
+                    easy: [
+                        () => {
+                            const a = Math.floor(Math.random() * 3) + 1;
+                            return {
+                                type: "Fonction exponentielle",
+                                function: `Équation: e<sup>x</sup> = ${a}`,
+                                questions: [
+                                    `Résoudre l'équation`,
+                                    `Exprimer la solution avec ln`
+                                ]
+                            };
+                        }
+                    ],
+                    medium: [
+                        () => {
+                            const a = Math.floor(Math.random() * 5) + 1;
+                            const b = Math.floor(Math.random() * 3) + 1;
+                            return {
+                                type: "Fonction exponentielle",
+                                function: `Équation: e<sup>2x</sup> - ${a}e<sup>x</sup> + ${b} = 0`,
+                                questions: [
+                                    `Poser X = e<sup>x</sup>`,
+                                    `Résoudre l'équation du second degré`,
+                                    `En déduire les solutions en x`
+                                ]
+                            };
+                        }
+                    ],
+                    hard: [
+                        () => {
+                            return {
+                                type: "Étude complète",
+                                function: `f(x) = (x² + 1)·e<sup>-x</sup>`,
+                                questions: [
+                                    `Calculer les limites en ±∞`,
+                                    `Montrer que f'(x) = -(x - 1)²·e<sup>-x</sup>`,
+                                    `Dresser le tableau de variations`,
+                                    `Tracer la courbe`
+                                ]
+                            };
+                        }
+                    ]
+                }
             },
             
             rational: {
-                moyen: [
-                    () => {
-                        const a = Math.floor(Math.random() * 3) + 1;
-                        return {
-                            type: "Fonction rationnelle",
-                            function: `f(x) = (x² - ${a})/(x + ${a})`,
-                            questions: [
-                                `Déterminer le domaine de définition`,
-                                `Calculer les limites aux bornes`,
-                                `Calculer f'(x)`,
-                                `Étudier les variations de f`,
-                                `Déterminer les asymptotes`
-                            ]
-                        };
-                    }
-                ],
-                difficile: [
-                    () => {
-                        return {
-                            type: "Fonction homographique",
-                            function: `f(x) = (2x + 3)/(x - 1)`,
-                            questions: [
-                                `Montrer que f(x) = 2 + 5/(x - 1)`,
-                                `Étudier les variations de f`,
-                                `Montrer que f est une bijection de ℝ\\{1} vers ℝ\\{2}`,
-                                `Déterminer la fonction réciproque f<sup>-1</sup>`,
-                                `Tracer (C<sub>f</sub>) et (C<sub>f<sup>-1</sup></sub>) dans le même repère`
-                            ]
-                        };
-                    }
-                ]
+                bac1: {
+                    medium: [
+                        () => {
+                            const a = Math.floor(Math.random() * 3) + 1;
+                            return {
+                                type: "Fonction rationnelle",
+                                function: `f(x) = (x² - ${a})/(x + ${a})`,
+                                questions: [
+                                    `Déterminer le domaine de définition`,
+                                    `Calculer les limites aux bornes`,
+                                    `Calculer f'(x)`
+                                ]
+                            };
+                        }
+                    ],
+                    hard: [
+                        () => {
+                            return {
+                                type: "Fonction homographique",
+                                function: `f(x) = (2x + 3)/(x - 1)`,
+                                questions: [
+                                    `Montrer que f(x) = 2 + 5/(x - 1)`,
+                                    `Étudier les variations de f`,
+                                    `Déterminer les asymptotes`,
+                                    `Tracer la courbe`
+                                ]
+                            };
+                        }
+                    ]
+                },
+                bac2: {
+                    hard: [
+                        () => {
+                            return {
+                                type: "Bijection et fonction réciproque",
+                                function: `f(x) = (2x + 3)/(x - 1)`,
+                                questions: [
+                                    `Montrer que f est une bijection`,
+                                    `Déterminer la fonction réciproque f<sup>-1</sup>`,
+                                    `Tracer (C<sub>f</sub>) et (C<sub>f<sup>-1</sup></sub>)`
+                                ]
+                            };
+                        }
+                    ]
+                }
             },
             
             complete: {
-                difficile: [
-                    () => {
-                        const a = Math.floor(Math.random() * 3) + 2;
-                        return {
-                            type: "Étude complète",
-                            function: `f(x) = x³/(x² - ${a})`,
-                            questions: [
-                                `<b>Partie A - Domaine et limites</b>`,
-                                `1) Déterminer D<sub>f</sub>`,
-                                `2) Calculer lim<sub>x→±√${a}</sub> f(x)`,
-                                `3) Calculer lim<sub>x→±∞</sub> f(x)`,
-                                `<b>Partie B - Asymptotes</b>`,
-                                `1) Déterminer les asymptotes verticales`,
-                                `2) Montrer que lim<sub>x→±∞</sub> [f(x) - x] = 0`,
-                                `3) En déduire l'asymptote oblique`,
-                                `<b>Partie C - Variations</b>`,
-                                `1) Calculer f'(x)`,
-                                `2) Étudier le signe de f'(x)`,
-                                `3) Dresser le tableau de variations complet`,
-                                `<b>Partie D - Courbe</b>`,
-                                `1) Tracer les asymptotes`,
-                                `2) Construire (C<sub>f</sub>)`
-                            ]
-                        };
-                    },
-                    () => {
-                        return {
-                            type: "Étude complète avec fonction auxiliaire",
-                            function: `f(x) = x² - 2x·ln(x) sur ]0, +∞[`,
-                            questions: [
-                                `<b>Partie A - Limites</b>`,
-                                `1) Montrer que lim<sub>x→0<sup>+</sup></sub> x·ln(x) = 0`,
-                                `2) En déduire lim<sub>x→0<sup>+</sup></sub> f(x)`,
-                                `3) Calculer lim<sub>x→+∞</sub> f(x)`,
-                                `<b>Partie B - Fonction auxiliaire</b>`,
-                                `1) Montrer que f'(x) = 2(x - ln(x) - 1)`,
-                                `2) Poser g(x) = x - ln(x) - 1 et étudier g`,
-                                `3) Montrer que g(x) = 0 admet une unique solution α ∈ ]1, 2[`,
-                                `<b>Partie C - Étude de f</b>`,
-                                `1) Dresser le tableau de variations de f`,
-                                `2) Montrer que f(α) < 0`,
-                                `3) Tracer la courbe (C<sub>f</sub>)`
-                            ]
-                        };
-                    }
-                ]
+                bac2: {
+                    hard: [
+                        () => {
+                            const a = Math.floor(Math.random() * 3) + 2;
+                            return {
+                                type: "Étude complète",
+                                function: `f(x) = x³/(x² - ${a})`,
+                                questions: [
+                                    `<b>Partie A</b>: Domaine et limites`,
+                                    `<b>Partie B</b>: Asymptotes`,
+                                    `<b>Partie C</b>: Dérivée et variations`,
+                                    `<b>Partie D</b>: Courbe représentative`
+                                ]
+                            };
+                        }
+                    ]
+                }
             }
         };
 
@@ -949,6 +1102,7 @@
 
         function generateProblems() {
             const type = document.getElementById('problemType').value;
+            const curriculumLevel = document.getElementById('curriculumLevel').value;
             const difficulty = document.getElementById('difficulty').value;
             const quantity = parseInt(document.getElementById('quantity').value);
             
@@ -956,7 +1110,7 @@
             problemCounter = 1;
             
             for (let i = 0; i < quantity; i++) {
-                const problem = generateSingleProblem(type, difficulty);
+                const problem = generateSingleProblem(type, curriculumLevel, difficulty);
                 if (problem) {
                     generatedProblems.push(problem);
                 }
@@ -966,26 +1120,37 @@
             updateStats();
         }
 
-        function generateSingleProblem(type, difficulty) {
+        function generateSingleProblem(type, curriculumLevel, difficulty) {
             let selectedType = type === 'all' ? getRandomType() : type;
+            let selectedLevel = curriculumLevel === 'all' ? getRandomLevel() : curriculumLevel;
             let selectedDifficulty = difficulty === 'all' ? getRandomDifficulty() : difficulty;
             
+            // Try to get generator for selected combination
             const generators = problemGenerators[selectedType];
-            if (!generators || !generators[selectedDifficulty]) {
-                selectedDifficulty = 'moyen';
-            }
+            if (!generators) return null;
             
-            const availableGenerators = generators[selectedDifficulty];
-            if (!availableGenerators || availableGenerators.length === 0) {
-                return null;
+            let levelGenerators = generators[selectedLevel];
+            if (!levelGenerators) {
+                // Fallback to other level
+                selectedLevel = selectedLevel === 'bac1' ? 'bac2' : 'bac1';
+                levelGenerators = generators[selectedLevel];
             }
+            if (!levelGenerators) return null;
             
-            const generator = availableGenerators[Math.floor(Math.random() * availableGenerators.length)];
+            let difficultyGenerators = levelGenerators[selectedDifficulty];
+            if (!difficultyGenerators || difficultyGenerators.length === 0) {
+                // Fallback to medium difficulty
+                difficultyGenerators = levelGenerators['medium'] || levelGenerators['easy'] || levelGenerators['hard'];
+            }
+            if (!difficultyGenerators || difficultyGenerators.length === 0) return null;
+            
+            const generator = difficultyGenerators[Math.floor(Math.random() * difficultyGenerators.length)];
             const problemData = generator();
             
             return {
                 number: problemCounter++,
                 type: problemData.type,
+                level: selectedLevel,
                 difficulty: selectedDifficulty,
                 function: problemData.function,
                 questions: problemData.questions
@@ -997,16 +1162,20 @@
             return types[Math.floor(Math.random() * types.length)];
         }
 
+        function getRandomLevel() {
+            return Math.random() < 0.5 ? 'bac1' : 'bac2';
+        }
+
         function getRandomDifficulty() {
-            const difficulties = ['facile', 'moyen', 'difficile'];
-            const weights = [0.3, 0.5, 0.2]; // 30% facile, 50% moyen, 20% difficile
+            const difficulties = ['easy', 'medium', 'hard'];
+            const weights = [0.3, 0.5, 0.2];
             const random = Math.random();
             let sum = 0;
             for (let i = 0; i < weights.length; i++) {
                 sum += weights[i];
                 if (random < sum) return difficulties[i];
             }
-            return 'moyen';
+            return 'medium';
         }
 
         function displayProblems() {
@@ -1025,13 +1194,31 @@
                 return;
             }
             
+            const levelLabels = {
+                'bac1': 'Bac 1',
+                'bac2': 'Bac 2'
+            };
+            
+            const difficultyLabels = {
+                'easy': 'Facile',
+                'medium': 'Moyen',
+                'hard': 'Difficile'
+            };
+            
+            const difficultyClasses = {
+                'easy': 'badge-easy',
+                'medium': 'badge-medium',
+                'hard': 'badge-hard'
+            };
+            
             container.innerHTML = generatedProblems.map(problem => `
                 <div class="problem-card">
                     <div class="problem-header">
-                        <div>
+                        <div class="problem-badges">
                             <span class="problem-number">Exercice ${problem.number}</span>
-                            <span class="problem-difficulty difficulty-${problem.difficulty}">
-                                ${problem.difficulty.charAt(0).toUpperCase() + problem.difficulty.slice(1)}
+                            <span class="badge badge-level">${levelLabels[problem.level]}</span>
+                            <span class="badge ${difficultyClasses[problem.difficulty]}">
+                                ${difficultyLabels[problem.difficulty]}
                             </span>
                         </div>
                         <span class="problem-type">${problem.type}</span>
@@ -1058,16 +1245,13 @@
             
             statsDiv.style.display = 'grid';
             
-            // Total problems
             document.getElementById('totalProblems').textContent = generatedProblems.length;
             
-            // Average difficulty
-            const difficultyValues = { facile: 1, moyen: 2, difficile: 3 };
+            const difficultyValues = { easy: 1, medium: 2, hard: 3 };
             const avgDiff = generatedProblems.reduce((sum, p) => sum + difficultyValues[p.difficulty], 0) / generatedProblems.length;
             const avgDiffText = avgDiff < 1.5 ? 'Facile' : avgDiff < 2.5 ? 'Moyen' : 'Difficile';
             document.getElementById('avgDifficulty').textContent = avgDiffText;
             
-            // Unique types
             const uniqueTypes = new Set(generatedProblems.map(p => p.type));
             document.getElementById('typeCount').textContent = uniqueTypes.size;
         }
@@ -1092,7 +1276,6 @@
             window.print();
         }
 
-        // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             displayProblems();
         });
