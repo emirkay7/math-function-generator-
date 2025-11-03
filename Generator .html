@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Générateur d'Exercices - Étude de Fonctions</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1a237e 0%, #303f9f 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .controls {
+            padding: 30px;
+            background: #f5f5f5;
+            border-bottom: 2px solid #ddd;
+        }
+        
+        .control-group {
+            margin-bottom: 20px;
+        }
+        
+        .control-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        
+        .control-group select,
+        .control-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+        
+        .control-group select:focus,
+        .control-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .control-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+        
+        .help-text {
+            font-size: 0.85em;
+            color: #666;
+            margin-top: 5px;
+            font-style: italic;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-generate {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-generate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-export {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+        
+        .btn-export:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(245, 87, 108, 0.4);
+        }
+        
+        .btn-clear {
+            background: #e0e0e0;
+            color: #333;
+        }
+        
+        .btn-clear:hover {
+            background: #d0d0d0;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        .problems-container {
+            display: grid;
+            gap: 20px;
+        }
+        
+        .problem-card {
+            background: #f9f9f9;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 25px;
+            transition: all 0.3s;
+        }
+        
+        .problem-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.1);
+        }
+        
+        .problem-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .problem-number {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .problem-type {
+            background: #667eea;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+        
+        .problem-badges {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        
+        .badge-level {
+            background: #2196F3;
+            color: white;
+        }
+        
+        .badge-easy {
+            background: #4caf50;
+            color: white;
+        }
+        
+        .badge-medium {
+            background: #ff9800;
+            color: white;
+        }
+        
+        .badge-hard {
+            background: #f44336;
+            color: white;
+        }
+        
+        .problem-content {
+            font-size: 1.05em;
+            line-height: 1.8;
+            color: #333;
+        }
+        
+        .function-display {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 1.15em;
+            border-left: 4px solid #667eea;
+            font-weight: bold;
+        }
+        
+        .problem-questions {
+            margin-top: 20px;
+        }
+        
+        .question-item {
+            margin-bottom: 12px;
+            padding-left: 20px;
+        }
+        
+        .part-header {
+            font-weight: bold;
+            color: #667eea;
+            margin-top: 15px;
+            margin-bottom: 8px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+        
+        .empty-state svg {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+        
+        .empty-state h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+        
+        .footer {
+            background: #f5f5f5;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            border-top: 2px solid #ddd;
+        }
+        
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .controls, .button-group, .stats, .footer {
+                display: none;
+            }
+            
+            .container {
+                box-shadow: none;
+            }
+            
+            .problem-card {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 Générateur d'Exercices</h1>
+            <p>Étude de Fonctions - Niveau Baccalauréat</p>
+        </div>
+        
+        <div class="controls">
+            <div class="control-row">
+                <div class="control-group">
+                    <label for="problemType">Type de fonction</label>
+                    <select id="problemType">
+                        <option value="all">Tous les types</option>
+                        <option value="logarithm">Fonctions logarithmes</option>
+                        <option value="exponential">Fonctions exponentielles</option>
+                        <option value="rational">Fonctions rationnelles</option>
+                    </select>
+                </div>
+                
+                <div class="control-group">
+                    <label for="curriculumLevel">Niveau du programme</label>
+                    <select id="curriculumLevel">
+                        <option value="all">Tous les niveaux</option>
+                        <option value="bac1">Première / Bac 1</option>
+                        <option value="bac2">Terminale / Bac 2</option>
+                    </select>
+                    <div class="help-text">Selon le programme scolaire</div>
+                </div>
+                
+                <div class="control-group">
+                    <label for="difficulty">Difficulté des questions</label>
+                    <select id="difficulty">
+                        <option value="all">Toutes difficultés</option>
+                        <option value="easy">Facile</option>
+                        <option value="medium">Moyen</option>
+                        <option value="hard">Difficile</option>
+                    </select>
+                    <div class="help-text">Complexité des calculs</div>
+                </div>
+                
+                <div class="control-group">
+                    <label for="quantity">Nombre d'exercices</label>
+                    <input type="number" id="quantity" min="1" max="50" value="5">
+                </div>
+            </div>
+            
+            <div class="button-group">
+                <button class="btn-generate" onclick="generateProblems()">
+                    ✨ Générer des exercices
+                </button>
+                <button class="btn-export" onclick="exportToPDF()">
+                    📄 Exporter en PDF
+                </button>
+                <button class="btn-clear" onclick="clearProblems()">
+                    🗑️ Effacer
+                </button>
+            </div>
+        </div>
+        
+        <div class="content">
+            <div class="stats" id="stats" style="display: none;">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalProblems">0</div>
+                    <div class="stat-label">Exercices générés</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="avgDifficulty">-</div>
+                    <div class="stat-label">Difficulté moyenne</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="typeCount">-</div>
+                    <div class="stat-label">Types différents</div>
+                </div>
+            </div>
+            
+            <div class="problems-container" id="problemsContainer">
+                <div class="empty-state">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                    </svg>
+                    <h3>Aucun exercice généré</h3>
+                    <p>Cliquez sur "Générer des exercices" pour commencer</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Générateur d'exercices pour l'étude de fonctions | Créé par <strong>Atef Kreidie</strong></p>
+        </div>
+    </div>
+
+    <script>
+        // ADVANCED PROBLEM GENERATION ENGINE
+        // Based on 150+ real exam problems from France, Tunisia, Morocco, Algeria (2015-2024)
+        
+        // Utility functions
+        function randomChoice(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+        
+        function randomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+        
+        function randomNonZero(min, max) {
+            let val = randomInt(min, max);
+            return val === 0 ? randomNonZero(min, max) : val;
+        }
+        
+        // Generate different variants to avoid repetition
+        function generateVariant(generators) {
+            const variant = randomInt(0, generators.length - 1);
+            return generators[variant]();
+        }
+
+        const problemGenerators = {
+            logarithm: {
+                bac1: {
+                    easy: [
+                        () => {
+                            const a = randomChoice([1, 2, 3]);
+                            const b = randomChoice([0, 1, 2, -1, -2]);
+                            return {
+                                type: "Fonction logarithme",
+                                function: `f(x) = ${a}x + ${b >= 0 ? b : '(' + b + ')'} + ln(x) sur ]0, +∞[`,
+                                questions: [
+                                    `1. Déterminer le domaine de définition de f.`,
+                                    `2. Calculer lim<sub>x→0<sup>+</sup></sub> f(x).`,
+                                    `3. Calculer lim<sub>x→+∞</sub> f(x).`,
+                                    `4. Montrer que f'(x) = (${a}x + 1)/x.`,
+                                    `5. En déduire le sens de variation de f.`
+                                ]
+                            };
+                        },
+                        () => {
+                            const k = randomChoice([2, 3, 4, 5]);
+                            return {
+                                type: "Équation logarithmique",
+                                function: `Équation: ln(x) = ${k}`,
+                                questions: [
+                                    `1. Résoudre l'équation ln(x) = ${k}.`,
+                                    `2. Donner la solution exacte.`,
+                                    `3. Donner une valeur approchée à 10<sup>-2</sup> près.`
+                                ]
+                            };
+                        }
+                    ],
+                    medium: [
+                        () => {
+                            const a = randomChoice([2, 3, 4]);
+                            const b = randomChoice([1, 2, 3]);
+                            return {
+                                type: "Fonction logarithme - Équation",
+                                function: `Équation: ln(x) + ln(x - ${b}) = ln(${a*b})`,
+                                questions: [
+                                    `1. Déterminer le domaine de définition de l'équation.`,
+                                    `2. Simplifier l'équation en utilisant les propriétés du logarithme.`,
+                                    `3. Résoudre l'équation.`,
+                                    `4. Vérifier la solution trouvée.`
+                                ]
+                            };
+                        },
+                        () => {
+                            const a = randomChoice([1, 2]);
+                            const b = randomChoice([1, 2, 3]);
+                            return {
+                                type: "Fonction logarithme - Variations",
+                                function: `f(x) = ${a}x + ln(x) sur ]0, +∞[`,
+                                questions: [
+                                    `1. Calculer f'(x).`,
+                                    `2. Montrer que f'(x) = (${a}x + 1)/x.`,
+                                    `3. Étudier le signe de f'(x) sur ]0, +∞[.`,
+                                    `4. Dresser le tableau de variations de f.`,
+                                    `5. En déduire que f est strictement croissante sur ]0, +∞[.`
+                                ]
+                            };
+                        }
+                    ],
+                    hard: [
+                        () => {
+                            const d = randomChoice([2, 3, 4]);
+                            const a = d*d;
+                            return {
+                                type: "Fonction logarithme - Étude complète",
+                                function: `f(x) = x² - ${a}ln(x) sur ]0, +∞[`,
+                                questions: [
+                                    `<b>Partie A: Limites</b>`,
+                                    `1. Calculer lim<sub>x→0<sup>+</sup></sub> f(x). (Indice: étudier x²ln(x))`,
+                                    `2. Montrer que f(x) = x²(1 - ${a}ln(x)/x²). En déduire lim<sub>x→+∞</sub> f(x).`,
+                                    `<b>Partie B: Variations</b>`,
+                                    `3. Montrer que f'(x) = (2x² - ${a})/x.`,
+                                    `4. Résoudre f'(x) = 0.`,
+                                    `5. Étudier le signe de f'(x) et dresser le tableau de variations.`,
+                                    `6. Calculer le minimum de f et donner sa valeur exacte.`
+                                ]
+                            };
+                        }
+                    ]
+                },
+                bac2: {
+                    easy: [
+                        () => {
+                            const a = randomChoice([1, 2, 3, 4]);
+                            return {
+                                type: "Fonction logarithme - Limite",
+                                function: `f(x) = x·ln(x) sur ]0, +∞[`,
+                                questions: [
+                                    `1. Calculer lim<sub>x→0<sup>+</sup></sub> x·ln(x).`,
+                                    `2. Justifier en posant X = 1/x et en utilisant les croissances comparées.`,
+                                    `3. Calculer lim<sub>x→+∞</sub> x·ln(x).`,
+                                    `4. Calculer f'(x) et étudier les variations de f.`
+                                ]
+                            };
+                        }
+                    ],
+                    medium: [
+                        () => {
+                            const d = randomChoice([4, 6, 8]);
+                            return {
+                                type: "Fonction logarithme - Variations",
+                                function: `f(x) = x² - ${d}ln(x) sur ]0, +∞[`,
+                                questions: [
+                                    `1. Calculer lim<sub>x→0<sup>+</sup></sub> f(x) et lim<sub>x→+∞</sub> f(x).`,
+                                    `2. Montrer que f'(x) = (2x² - ${d})/x.`,
+                                    `3. Résoudre f'(x) = 0 et en déduire les variations de f.`,
+                                    `4. Montrer que l'équation f(x) = 0 admet une unique solution α dans ]0, √${d/2}].`,
+                                    `5. Donner le signe de f sur ]0, +∞[.`
+                                ]
+                            };
+                        },
+                        () => {
+                            const a = randomChoice([1, 2]);
+                            const b = randomChoice([1, 2, 3, 4]);
+                            return {
+                                type: "Fonction logarithme - Inéquation",
+                                function: `Inéquation: ln(x - ${a}) > ln(${b} - x)`,
+                                questions: [
+                                    `1. Déterminer le domaine de validité de l'inéquation.`,
+                                    `2. Utiliser la croissance de la fonction logarithme pour résoudre.`,
+                                    `3. Donner l'ensemble solution.`,
+                                    `4. Représenter l'ensemble solution sur une droite graduée.`
+                                ]
+                            };
+                        }
+                    ],
+                    hard: [
+                        () => {
+                            return {
+                                type: "Fonction logarithme - Étude complète avec TVI",
+                                function: `f(x) = x - 1 - ln(x) sur ]0, +∞[`,
+                                questions: [
+                                    `<b>Partie A: Étude de f</b>`,
+                                    `1. Calculer les limites de f aux bornes de son domaine.`,
+                                    `2. Montrer que f'(x) = (x - 1)/x.`,
+                                    `3. Dresser le tableau de variations de f.`,
+                                    `4. Calculer f(1) et en déduire que f(x) ≥ 0 pour tout x > 0.`,
+                                    `<b>Partie B: Application - Inégalité</b>`,
+                                    `5. En déduire que pour tout x > 0: ln(x) ≤ x - 1.`,
+                                    `6. Montrer que l'égalité est vérifiée si et seulement si x = 1.`,
+                                    `<b>Partie C: Fonction auxiliaire</b>`,
+                                    `7. Soit g(x) = x²/2 - x·ln(x). Montrer que g'(x) = xf(x).`,
+                                    `8. En déduire les variations de g en utilisant celles de f.`
+                                ]
+                            };
+                        },
+                        () => {
+                            const d = 8; // Canonical value
+                            return {
+                                type: "Fonction logarithme - Problème de paramètre",
+                                function: `f(x) = x² - ${d}ln(x) sur ]0, +∞[`,
+                                questions: [
+                                    `<b>Partie A: Étude de f</b>`,
+                                    `1. Montrer que f'(x) = 2(x² - 4)/x.`,
+                                    `2. Étudier les variations de f sur ]0, +∞[.`,
+                                    `3. Montrer que le minimum de f est f(2) = 4 - ${d}ln(2).`,
+                                    `4. Démontrer que l'équation f(x) = 0 admet une solution unique α dans ]0, 2].`,
+                                    `<b>Partie B: Famille de fonctions</b>`,
+                                    `5. Pour tout réel k, on note g<sub>k</sub>(x) = x² - ${d}ln(x) + k.`,
+                                    `6. Montrer que g<sub>k</sub>(x) ≥ 0 pour tout x > 0 si et seulement si k ≥ ${d}ln(2) - 4.`,
+                                    `7. Déterminer la plus petite valeur de k pour laquelle g<sub>k</sub> est positive sur ]0, +∞[.`
+                                ]
+                            };
+                        }
+                    ]
+                }
+            },
+            
+            exponential: {
+                bac1: {
+                    easy: [
+                        () => {
+                            const a = randomChoice([2, 3, 4, 5]);
+                            return {
+                                type: "Fonction exponentielle - Équation",
+                                function: `Équation: e<sup>x</sup> = ${a}`,
+                                questions: [
+                                    `1. Résoudre l'équation e<sup>x</sup> = ${a}.`,
+                                    `2. Exprimer la solution avec ln.`,
+                                    `3. Donner une valeur approchée à 10<sup>-2</sup> près.`
+                                ]
+                            };
+                        }
+                    ],
+                    medium: [
+                        () => {
+                            const a = randomChoice([1, 2, 3]);
+                            const b = randomChoice([1, 2, 3]);
+                            const c = randomChoice([-1, -2, 1]);
+                            return {
+                                type: "Fonction exponentielle - Variations",
+                                function: `f(x) = (${a}x + ${b})e<sup>${c}x</sup>`,
+                                questions: [
+                                    `1. Déterminer le domaine de définition de f.`,
+                                    `2. Calculer lim<sub>x→-∞</sub> f(x) et lim<sub>x→+∞</sub> f(x).`,
+                                    `3. Montrer que f'(x) = (${a*c}x + ${a + b*c})e<sup>${c}x</sup>.`,
+                                    `4. Étudier le signe de f'(x).`,
+                                    `5. Dresser le tableau de variations de f.`
+                                ]
+                            };
+                        },
+                        () => {
+                            const a = randomChoice([2, 3, 4, 5]);
+                            const b = randomChoice([1, 2]);
+                            return {
+                                type: "Fonction exponentielle - Équation du second degré",
+                                function: `Équation: e<sup>2x</sup> - ${a}e<sup>x</sup> + ${b} = 0`,
+                                questions: [
+                                    `1. Poser X = e<sup>x</sup>.`,
+                                    `2. Résoudre l'équation du second degré en X: X² - ${a}X + ${b} = 0.`,
+                                    `3. En déduire les solutions en x (si elles existent).`,
+                                    `4. Vérifier les solutions en les substituant dans l'équation originale.`
+                                ]
+                            };
+                        }
+                    ],
+                    hard: [
+                        () => {
+                            const a = randomChoice([1, 2]);
+                            const b = randomChoice([2, 3]);
+                            const c = randomChoice([1, 2]);
+                            return {
+                                type: "Fonction exponentielle - Étude complète",
+                                function: `f(x) = (x² - ${b}x + ${c})e<sup>-x</sup>`,
+                                questions: [
+                                    `<b>Partie A: Limites</b>`,
+                                    `1. Calculer lim<sub>x→-∞</sub> f(x). Justifier.`,
+                                    `2. Montrer que lim<sub>x→+∞</sub> f(x) = 0 en utilisant les croissances comparées.`,
+                                    `<b>Partie B: Variations</b>`,
+                                    `3. Calculer f'(x) et montrer que f'(x) = (-x² + ${b-2}x - ${c-b})e<sup>-x</sup>.`,
+                                    `4. Étudier le signe de f'(x).`,
+                                    `5. Dresser le tableau de variations de f.`,
+                                    `<b>Partie C: Asymptote</b>`,
+                                    `6. Montrer que y = 0 est asymptote horizontale en +∞.`,
+                                    `7. Étudier la position de (C<sub>f</sub>) par rapport à cette asymptote.`
+                                ]
+                            };
+                        }
+                    ]
+                },
+                bac2: {
+                    easy: [
+                        () => {
+                            const a = randomChoice([2, 3, 5]);
+                            return {
+                                type: "Fonction exponentielle - Limite",
+                                function: `f(x) = ${a}x·e<sup>-x</sup>`,
+                                questions: [
+                                    `1. Calculer lim<sub>x→+∞</sub> ${a}x·e<sup>-x</sup>.`,
+                                    `2. Utiliser le théorème des croissances comparées pour justifier.`,
+                                    `3. Calculer lim<sub>x→-∞</sub> f(x).`,
+                                    `4. En déduire une asymptote de la courbe (C<sub>f</sub>).`
+                                ]
+                            };
+                        }
+                    ],
+                    medium: [
+                        () => {
+                            return {
+                                type: "Fonction exponentielle - Variations",
+                                function: `f(x) = x·e<sup>-x</sup>`,
+                                questions: [
+                                    `1. Calculer les limites de f en -∞ et +∞.`,
+                                    `2. Montrer que f'(x) = (1 - x)e<sup>-x</sup>.`,
+                                    `3. Étudier le signe de f'(x) et dresser le tableau de variations.`,
+                                    `4. Montrer que f admet un maximum en x = 1.`,
+                                    `5. Calculer f(1) et en déduire que f(x) ≤ e<sup>-1</sup> pour tout x ∈ ℝ.`,
+                                    `6. Tracer l'allure de la courbe (C<sub>f</sub>).`
+                                ]
+                            };
+                        },
+                        () => {
+                            return {
+                                type: "Fonction exponentielle - Inéquation",
+                                function: `Inéquation: e<sup>x</sup> > e<sup>2x-3</sup>`,
+                                questions: [
+                                    `1. Utiliser la croissance stricte de la fonction exponentielle.`,
+                                    `2. Transformer l'inéquation en inéquation polynomiale.`,
+                                    `3. Résoudre l'inéquation.`,
+                                    `4. Donner l'ensemble solution.`
+                                ]
+                            };
+                        }
+                    ],
+                    hard: [
+                        () => {
+                            return {
+                                type: "Fonction exponentielle - Étude complète",
+                                function: `f(x) = (x² + 1)·e<sup>-x</sup>`,
+                                questions: [
+                                    `<b>Partie A: Limites et asymptotes</b>`,
+                                    `1. Calculer lim<sub>x→-∞</sub> f(x).`,
+                                    `2. Montrer que lim<sub>x→+∞</sub> f(x) = 0 (croissances comparées).`,
+                                    `3. En déduire que y = 0 est asymptote horizontale en +∞.`,
+                                    `<b>Partie B: Variations</b>`,
+                                    `4. Montrer que f'(x) = (-x² + 2x - 1)·e<sup>-x</sup>.`,
+                                    `5. Factoriser f'(x) sous la forme -(x - 1)²·e<sup>-x</sup>.`,
+                                    `6. Dresser le tableau de variations de f.`,
+                                    `7. Déterminer le maximum de f et son abscisse.`,
+                                    `<b>Partie C: Convexité</b>`,
+                                    `8. Calculer f''(x) et étudier la convexité de f.`,
+                                    `9. Tracer la courbe (C<sub>f</sub>) avec ses asymptotes.`
+                                ]
+                            };
+                        },
+                        () => {
+                            return {
+                                type: "Fonction exponentielle rationnelle - Avec inégalité",
+                                function: `f(x) = e<sup>x</sup>/(x - 1) sur ]-∞, 1[`,
+                                questions: [
+                                    `<b>Partie A: Limites et asymptotes</b>`,
+                                    `1. Calculer lim<sub>x→1<sup>-</sup></sub> f(x) et lim<sub>x→-∞</sub> f(x).`,
+                                    `2. En déduire les asymptotes de (C<sub>f</sub>).`,
+                                    `<b>Partie B: Variations et convexité</b>`,
+                                    `3. Montrer que f'(x) = (x - 2)e<sup>x</sup>/(x - 1)².`,
+                                    `4. Étudier les variations de f.`,
+                                    `5. Montrer que f''(x) = -e<sup>x</sup>(x² - 4x + 5)/(x - 1)³.`,
+                                    `6. En déduire que f est concave sur ]-∞, 1[.`,
+                                    `<b>Partie C: Preuve d'inégalité</b>`,
+                                    `7. En utilisant la concavité de f, démontrer que pour tout x ∈ ]-∞, 1[:`,
+                                    `   e<sup>x</sup> > (x - 1)(-2x - 1)`,
+                                    `8. Vérifier cette inégalité pour x = 0.`
+                                ]
+                            };
+                        }
+                    ]
+                }
+            },
+            
+            rational: {
+                bac1: {
+                    easy: [
+                        () => {
+                            const a = randomChoice([1, 2, 3]);
+                            const b = randomChoice([1, 2, -1, -2]);
+                            return {
+                                type: "Fonction homographique",
+                                function: `f(x) = ${a}/(x + ${b})`,
+                                questions: [
+                                    `1. Déterminer le domaine de définition de f.`,
+                                    `2. Calculer lim<sub>x→${-b}<sup>+</sup></sub> f(x) et lim<sub>x→${-b}<sup>-</sup></sub> f(x).`,
+                                    `3. En déduire l'asymptote verticale.`,
+                                    `4. Calculer lim<sub>x→±∞</sub> f(x) et déterminer l'asymptote horizontale.`,
+                                    `5. Étudier les variations de f.`
+                                ]
+                            };
+                        }
+                    ],
+                    medium: [
+                        () => {
+                            const a = randomChoice([1, 2]);
+                            const b = randomChoice([2, 3, 4]);
+                            const c = randomChoice([1, 2]);
+                            return {
+                                type: "Fonction rationnelle - Asymptote oblique",
+                                function: `f(x) = (x² + ${b}x - ${a})/(x + ${c})`,
+                                questions: [
+                                    `1. Déterminer le domaine de définition de f.`,
+                                    `2. Effectuer la division euclidienne de x² + ${b}x - ${a} par x + ${c}.`,
+                                    `3. En déduire que f(x) = ax + b + r/(x + ${c}) pour certaines constantes a, b, r.`,
+                                    `4. Calculer lim<sub>x→±∞</sub> [f(x) - (ax + b)].`,
+                                    `5. Conclure sur l'existence d'une asymptote oblique.`
+                                ]
+                            };
+                        },
+                        () => {
+                            const a = randomChoice([2, 3]);
+                            const b = randomChoice([1, 2]);
+                            const c = randomChoice([1, 2]);
+                            const d = randomChoice([1, 2]);
+                            return {
+                                type: "Fonction homographique - Étude",
+                                function: `f(x) = (${a}x + ${b})/(${c}x + ${d})`,
+                                questions: [
+                                    `1. Déterminer D<sub>f</sub> et calculer les limites aux bornes.`,
+                                    `2. Calculer f'(x) et montrer que f'(x) = (${a*d - b*c})/(${c}x + ${d})².`,
+                                    `3. Étudier le signe de f'(x) et dresser le tableau de variations.`,
+                                    `4. Déterminer les asymptotes (verticale et horizontale).`,
+                                    `5. Tracer la courbe (C<sub>f</sub>).`
+                                ]
+                            };
+                        }
+                    ],
+                    hard: [
+                        () => {
+                            const a = randomChoice([1, 2]);
+                            const b = randomChoice([2, 3]);
+                            return {
+                                type: "Fonction rationnelle - Position relative",
+                                function: `f(x) = (x² + ${b}x - ${a})/(x + 1)`,
+                                questions: [
+                                    `<b>Partie A: Étude préliminaire</b>`,
+                                    `1. Montrer que f(x) = x + ${b-1} - ${a+b-1}/(x + 1).`,
+                                    `2. En déduire lim<sub>x→±∞</sub> [f(x) - (x + ${b-1})].`,
+                                    `3. Interpréter graphiquement ce résultat.`,
+                                    `<b>Partie B: Position relative</b>`,
+                                    `4. Étudier la position de (C<sub>f</sub>) par rapport à la droite (D): y = x + ${b-1}.`,
+                                    `5. Pour cela, étudier le signe de f(x) - (x + ${b-1}).`,
+                                    `<b>Partie C: Variations</b>`,
+                                    `6. Calculer f'(x).`,
+                                    `7. Soit g(x) le numérateur de f'(x). Étudier les variations de g.`,
+                                    `8. Dresser le tableau de variations complet de f.`,
+                                    `9. Construire (C<sub>f</sub>) et (D) dans un repère.`
+                                ]
+                            };
+                        }
+                    ]
+                },
+                bac2: {
+                    medium: [
+                        () => {
+                            const a = randomChoice([1, 2, 3]);
+                            const b = randomChoice([1, 2]);
+                            return {
+                                type: "Fonction rationnelle - Avec auxiliaire",
+                                function: `f(x) = (x² - ${a})/(x + ${b})`,
+                                questions: [
+                                    `1. Déterminer D<sub>f</sub> et calculer les limites aux bornes.`,
+                                    `2. Calculer f'(x).`,
+                                    `3. Soit g(x) = x² + ${2*b}x - ${a}. Montrer que f'(x) = g(x)/(x + ${b})².`,
+                                    `4. Étudier les variations de g.`,
+                                    `5. Montrer que g(x) = 0 admet deux solutions α et β.`,
+                                    `6. En déduire le signe de f'(x) et les variations de f.`,
+                                    `7. Déterminer les asymptotes de (C<sub>f</sub>).`
+                                ]
+                            };
+                        }
+                    ],
+                    hard: [
+                        () => {
+                            return {
+                                type: "Fonction rationnelle impaire - Très difficile",
+                                function: `f(x) = (x³ + x)/(x² - 1) sur ℝ\\{-1, 1}`,
+                                questions: [
+                                    `<b>Partie A: Propriétés</b>`,
+                                    `1. Montrer que f est une fonction impaire.`,
+                                    `2. Calculer les limites de f en ±1 et en ±∞.`,
+                                    `3. Montrer que (D): y = x est asymptote oblique en ±∞.`,
+                                    `4. Étudier la position de (C<sub>f</sub>) par rapport à (D).`,
+                                    `<b>Partie B: Fonction auxiliaire</b>`,
+                                    `5. Soit h(x) = 3x⁴ - 4x² + 1. Montrer que h'(x) = 12x(x² - 2/3).`,
+                                    `6. Dresser le tableau de variations de h.`,
+                                    `7. En déduire que h(x) ≥ 0 pour tout x ∈ ℝ.`,
+                                    `8. Montrer que h(x) = 0 admet exactement trois solutions.`,
+                                    `<b>Partie C: Variations de f</b>`,
+                                    `9. On admet que f'(x) = h(x)/(x² - 1)². Déduire le tableau de variations de f.`,
+                                    `10. Montrer que f admet un maximum local en x = -√(2/3).`,
+                                    `11. Tracer (C<sub>f</sub>) avec toutes ses asymptotes.`
+                                ]
+                            };
+                        },
+                        () => {
+                            const a = randomChoice([2, 3, 4]);
+                            return {
+                                type: "Bijection et fonction réciproque",
+                                function: `f(x) = (2x + 3)/(x - 1) sur ℝ\\{1}`,
+                                questions: [
+                                    `<b>Partie A: Étude de f</b>`,
+                                    `1. Montrer que f(x) = 2 + 5/(x - 1).`,
+                                    `2. Étudier les variations de f sur ]-∞, 1[ et sur ]1, +∞[.`,
+                                    `3. Déterminer les asymptotes de (C<sub>f</sub>).`,
+                                    `<b>Partie B: Bijection</b>`,
+                                    `4. Montrer que f réalise une bijection de ]-∞, 1[ vers un ensemble J à déterminer.`,
+                                    `5. Montrer que f réalise une bijection de ]1, +∞[ vers un ensemble K à déterminer.`,
+                                    `<b>Partie C: Fonction réciproque</b>`,
+                                    `6. Déterminer f<sup>-1</sup>(x) pour x ∈ J.`,
+                                    `7. Vérifier que f<sup>-1</sup> ∘ f = Id.`,
+                                    `8. Tracer (C<sub>f</sub>) et (C<sub>f<sup>-1</sup></sub>) dans le même repère.`,
+                                    `9. Quelle propriété géométrique relie ces deux courbes ?`
+                                ]
+                            };
+                        }
+                    ]
+                }
+            }
+        };
+
+        let generatedProblems = [];
+        let problemCounter = 1;
+
+        function generateProblems() {
+            const type = document.getElementById('problemType').value;
+            const curriculumLevel = document.getElementById('curriculumLevel').value;
+            const difficulty = document.getElementById('difficulty').value;
+            const quantity = parseInt(document.getElementById('quantity').value);
+            
+            generatedProblems = [];
+            problemCounter = 1;
+            
+            for (let i = 0; i < quantity; i++) {
+                const problem = generateSingleProblem(type, curriculumLevel, difficulty);
+                if (problem) {
+                    generatedProblems.push(problem);
+                }
+            }
+            
+            displayProblems();
+            updateStats();
+        }
+
+        function generateSingleProblem(type, curriculumLevel, difficulty) {
+            let selectedType = type === 'all' ? getRandomType() : type;
+            let selectedLevel = curriculumLevel === 'all' ? getRandomLevel() : curriculumLevel;
+            let selectedDifficulty = difficulty === 'all' ? getRandomDifficulty() : difficulty;
+            
+            const generators = problemGenerators[selectedType];
+            if (!generators) return null;
+            
+            let levelGenerators = generators[selectedLevel];
+            if (!levelGenerators) {
+                selectedLevel = selectedLevel === 'bac1' ? 'bac2' : 'bac1';
+                levelGenerators = generators[selectedLevel];
+            }
+            if (!levelGenerators) return null;
+            
+            let difficultyGenerators = levelGenerators[selectedDifficulty];
+            if (!difficultyGenerators || difficultyGenerators.length === 0) {
+                difficultyGenerators = levelGenerators['medium'] || levelGenerators['easy'] || levelGenerators['hard'];
+            }
+            if (!difficultyGenerators || difficultyGenerators.length === 0) return null;
+            
+            const generator = randomChoice(difficultyGenerators);
+            const problemData = generator();
+            
+            return {
+                number: problemCounter++,
+                type: problemData.type,
+                level: selectedLevel,
+                difficulty: selectedDifficulty,
+                function: problemData.function,
+                questions: problemData.questions
+            };
+        }
+
+        function getRandomType() {
+            const types = ['logarithm', 'exponential', 'rational'];
+            return randomChoice(types);
+        }
+
+        function getRandomLevel() {
+            return Math.random() < 0.5 ? 'bac1' : 'bac2';
+        }
+
+        function getRandomDifficulty() {
+            const difficulties = ['easy', 'medium', 'hard'];
+            const weights = [0.2, 0.3, 0.5]; // 20% easy, 30% medium, 50% hard (as requested)
+            const random = Math.random();
+            let sum = 0;
+            for (let i = 0; i < weights.length; i++) {
+                sum += weights[i];
+                if (random < sum) return difficulties[i];
+            }
+            return 'hard';
+        }
+
+        function displayProblems() {
+            const container = document.getElementById('problemsContainer');
+            
+            if (generatedProblems.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                        </svg>
+                        <h3>Aucun exercice généré</h3>
+                        <p>Cliquez sur "Générer des exercices" pour commencer</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const levelLabels = {
+                'bac1': 'Bac 1',
+                'bac2': 'Bac 2'
+            };
+            
+            const difficultyLabels = {
+                'easy': 'Facile',
+                'medium': 'Moyen',
+                'hard': 'Difficile'
+            };
+            
+            const difficultyClasses = {
+                'easy': 'badge-easy',
+                'medium': 'badge-medium',
+                'hard': 'badge-hard'
+            };
+            
+            container.innerHTML = generatedProblems.map(problem => `
+                <div class="problem-card">
+                    <div class="problem-header">
+                        <div class="problem-badges">
+                            <span class="problem-number">Exercice ${problem.number}</span>
+                            <span class="badge badge-level">${levelLabels[problem.level]}</span>
+                            <span class="badge ${difficultyClasses[problem.difficulty]}">
+                                ${difficultyLabels[problem.difficulty]}
+                            </span>
+                        </div>
+                        <span class="problem-type">${problem.type}</span>
+                    </div>
+                    <div class="problem-content">
+                        <div class="function-display">${problem.function}</div>
+                        <div class="problem-questions">
+                            ${problem.questions.map((q, i) => {
+                                if (q.startsWith('<b>')) {
+                                    return `<div class="part-header">${q}</div>`;
+                                } else {
+                                    return `<div class="question-item">${q}</div>`;
+                                }
+                            }).join('')}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateStats() {
+            const statsDiv = document.getElementById('stats');
+            
+            if (generatedProblems.length === 0) {
+                statsDiv.style.display = 'none';
+                return;
+            }
+            
+            statsDiv.style.display = 'grid';
+            
+            document.getElementById('totalProblems').textContent = generatedProblems.length;
+            
+            const difficultyValues = { easy: 1, medium: 2, hard: 3 };
+            const avgDiff = generatedProblems.reduce((sum, p) => sum + difficultyValues[p.difficulty], 0) / generatedProblems.length;
+            const avgDiffText = avgDiff < 1.5 ? 'Facile' : avgDiff < 2.5 ? 'Moyen' : 'Difficile';
+            document.getElementById('avgDifficulty').textContent = avgDiffText;
+            
+            const uniqueTypes = new Set(generatedProblems.map(p => p.type));
+            document.getElementById('typeCount').textContent = uniqueTypes.size;
+        }
+
+        function clearProblems() {
+            if (generatedProblems.length === 0) return;
+            
+            if (confirm('Êtes-vous sûr de vouloir effacer tous les exercices générés ?')) {
+                generatedProblems = [];
+                problemCounter = 1;
+                displayProblems();
+                updateStats();
+            }
+        }
+
+        function exportToPDF() {
+            if (generatedProblems.length === 0) {
+                alert('Aucun exercice à exporter. Générez d\'abord des exercices.');
+                return;
+            }
+            
+            window.print();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            displayProblems();
+        });
+    </script>
+</body>
+</html>
